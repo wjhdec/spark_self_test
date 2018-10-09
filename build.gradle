@@ -1,0 +1,46 @@
+group 'pers.wjh.bigdata'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'scala'
+
+repositories {
+    maven { url 'https://maven.aliyun.com/repository/public/' }
+}
+
+ext{
+    versions = [
+            // scala 相关包
+            scala       : '2.11.8',
+            scalaShort  : '2.11',
+            scalaTest   : '3.0.5',
+            spark       : '2.0.2',
+    ]
+
+    dep = [
+            scalatest   : "org.scalatest:scalatest_$versions.scalaShort:$versions.scalaTest",
+            spark   : [
+                    'core'      :  "org.apache.spark:spark-core_$versions.scalaShort:$versions.spark",
+                    'sql'       :  "org.apache.spark:spark-sql_$versions.scalaShort:$versions.spark",
+                    'ml'        :  "org.apache.spark:spark-mllib_$versions.scalaShort:$versions.spark",
+                    'streaming' :  "org.apache.spark:spark-streaming_$versions.scalaShort:$versions.spark"],
+    ]
+
+    ex_dep_module = [
+            scalatest   :  "scalatest_$versions.scalaShort"
+    ]
+}
+
+dependencies {
+    testCompile dep.scalatest
+    compileOnly (dep.spark.core){ exclude module: ex_dep_module.scalatest }
+    compileOnly (dep.spark.sql){ exclude module: ex_dep_module.scalatest }
+    compileOnly (dep.spark.streaming){ exclude module: ex_dep_module.scalatest }
+    compileOnly (dep.spark.streaming){ exclude module: ex_dep_module.scalatest }
+}
+
+sourceSets {
+    test{
+        compileClasspath += configurations.compileOnly
+        runtimeClasspath += configurations.compileOnly
+    }
+}
